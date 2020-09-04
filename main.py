@@ -7,12 +7,13 @@
 import json
 import datetime
 
-basebudget = [{"Tithing": 125}, {"Food": 600}, {"Counseling": 156}]
-
 #Add subcategories
 
 
-def main(filename):
+def main():
+    basebudget = jsonload()
+    basebudget = inp(basebudget)
+    jsonsave(basebudget)
     # json load
     # ask if new month
     # list categories of budget
@@ -20,7 +21,7 @@ def main(filename):
     pass
 
 def new_month(): # Should create a new json file when the month has changed.
-    try:
+    try: #Rollover option? Add in last month's budget to this month's?
         fout = open(f"{str(datetime.datetime.today())[0:7]}.json", "r")
         reading = json.load(fout)
         print(reading)
@@ -31,10 +32,36 @@ def new_month(): # Should create a new json file when the month has changed.
     finally:
         fout.close()
 
-def jsonload(filename):
-    pass
+def jsonload():
+    try:
+        file = open(f"{str(datetime.datetime.today())[0:7]}.json", "r")
+        basebudget = json.load(file)
+        file.close()
+        return basebudget
+    except: # Convert to with statement instead?
+        pass
+    finally:
+        try:
+            file.close()
+        except:
+            pass
 
-def inp():
+def jsonsave(basebudget): # Make sure this datetime object ends up being the same as in jsonload.
+    try: # Export to Excel too?
+        file = open(f"{str(datetime.datetime.today())[0:7]}.json", "w")
+        basebudget = json.dump(basebudget, file)
+        file.close()
+    except:
+        pass
+    finally:
+        try:
+            file.close()
+        except:
+            pass
+
+
+
+def inp(basebudget):
     while True: # Add a time-out? Like, after 1 minute of inactivity maybe?
         try:
             for x, di in enumerate(basebudget): # Display decimals to 2 digits.
@@ -51,7 +78,10 @@ def inp():
             try:
                 receipt = float(input("How much money does the receipt indicate? "))
                 basebudget[selection][next(iter(basebudget[selection].keys()))] -= receipt
-                continue
+                print(f"You have subtracted {receipt}"
+                      f" from {basebudget[selection]}. The total balance is now "
+                      f"{basebudget[selection][next(iter(basebudget[selection].keys()))]}")
+                continue # Add confirmation message!
             except ValueError:
                 print(ValueError("Please select a number."))
                 continue
@@ -59,5 +89,6 @@ def inp():
         except ValueError:
             print(ValueError("Please select a number."))
             continue
+    return basebudget
 
-inp()
+main()
