@@ -13,65 +13,49 @@
 import json
 import datetime
 
-#Add subcategories
-
 
 def main():
     new_month()
     basebudget = jsonload()
     basebudget = inp(basebudget)
     jsonsave(basebudget)
-    # json load
-    # ask if new month
-    # list categories of budget
-    # ask for number
-    pass
 
-def new_month(): # Should create a new json file when the month has changed.
-    try: #Rollover option? Add in last month's budget to this month's?
-        fout = open(f"{str(datetime.datetime.today())[0:7]}.json", "r")
-    except:
-        fout = open(f"{str(datetime.datetime.today())[0:7]}.json", "w")
-        basebudget = create_budget()
-        jsonsave(basebudget)
-        # Do things to prep this for adjusting numbers.
-    finally:
-        fout.close()
+
+# This function needs to be more general for initializing a file.
+# The automatic nature of this, particularly the potential for erasing a file in the except clause, is concerning.
+# While it probably will work fairly often, any IOError could trigger a file reset, frustrating users.
+def new_month():  # Should create a new json file when the month has changed.
+    try:  # Rollover option? Add in last month's budget to this month's?
+        with open(f"{str(datetime.datetime.today())[0:7]}.json", "r"):
+            pass
+    except IOError:
+        with open(f"{str(datetime.datetime.today())[0:7]}.json", "w"):
+            basebudget = create_budget()
+            jsonsave(basebudget)
+
 
 def jsonload():
     try:
-        file = open(f"{str(datetime.datetime.today())[0:7]}.json", "r")
-        basebudget = json.load(file)
-        file.close()
-        return basebudget
-    except: # Convert to with statement instead?
-        pass
-    finally:
-        try:
-            file.close()
-        except:
-            pass
+        with open(f"{str(datetime.datetime.today())[0:7]}.json", "r") as file:
+            basebudget = json.load(file)
+            return basebudget
+    except IOError as e:
+        print(e)
 
-def jsonsave(basebudget): # Make sure this datetime object ends up being the same as in jsonload.
-    try: # Export to Excel too?
-        file = open(f"{str(datetime.datetime.today())[0:7]}.json", "w")
-        basebudget = json.dump(basebudget, file)
-        file.close()
-    except:
-        pass
-    finally:
-        try:
-            file.close()
-        except:
-            pass
 
+def jsonsave(basebudget):
+    try:
+        with open(f"{str(datetime.datetime.today())[0:7]}.json", "w") as file:
+            json.dump(basebudget, file)
+    except IOError as e:
+        print(e)
 
 
 def inp(basebudget):
-    while True: # Add a time-out? Like, after 1 minute of inactivity maybe?
+    while True:  # Add a time-out? Like, after 1 minute of inactivity maybe?
         try:
-            for x, di in enumerate(basebudget): # Display decimals to 2 digits.
-                print(f"{x + 1}: {di}") # Format better, but I like having the current money number.
+            for x, di in enumerate(basebudget):  # Display decimals to 2 digits.
+                print(f"{x + 1}: {di}")  # Needs to have a better format.
             selection = input("Please select which category you would like to view. Type exit to end the program: ")
             if selection.lower() == "exit":
                 print("Have a good day!")
@@ -84,10 +68,10 @@ def inp(basebudget):
             try:
                 receipt = float(input("How much money does the receipt indicate? "))
                 basebudget[selection][next(iter(basebudget[selection].keys()))] -= receipt
-                print(f"You have subtracted {receipt}" # Make this message better!
+                print(f"You have subtracted {receipt}"  # Make this message better.
                       f" from {basebudget[selection]}. The total balance for this category is now "
                       f"{basebudget[selection][next(iter(basebudget[selection].keys()))]}")
-                continue # Add confirmation message!
+                continue
             except ValueError:
                 print(ValueError("Please select a number."))
                 continue
@@ -101,15 +85,13 @@ def inp(basebudget):
 def create_budget():
     budget = []
     while True:
-        key = input("Please name your category. Type exit to finish your budget: ") # Make it a bit nicer of a prompt?
-        # I.e. maybe have the "type exit" on a new line and find a way to keep the input come in on the first line?
-        # Probably something that would need a user interface beyond the console anyway, though.
+        key = input("Please name your category. Type exit to finish your budget: ")
         if key.lower() == "exit":
             break
         value = int(input("Please insert the amount alloted to this budget item: "))
         print("Is the following correct?")
         print(f"{key}: {value}")
-        confirm = input("Please confirm if this is accurate (Y/N): ") # Make more user-friendly?
+        confirm = input("Please confirm if this is accurate (Y/N): ")  # Make more user-friendly?
         if confirm.lower() == "y":
             budget.append({key: value})
             print("Your category has been added.")
@@ -120,9 +102,9 @@ def create_budget():
         else:
             print("Sorry, please type Y for yes, or N for no.")
             counter = 0
-            while True: # Is there a better, cleaner way to accomplish this?
+            while True:  # Is there a better, cleaner way to accomplish this?
                 counter += 1
-                if counter >= 5: # In case a user is completely stuck, this will terminate this inner loop and proceed
+                if counter >= 5:  # In case a user is completely stuck, this will terminate this inner loop and proceed
                     # as if the the user typed "N".
                     break
                 print("Is the following correct?")
