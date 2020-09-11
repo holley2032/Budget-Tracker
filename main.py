@@ -21,6 +21,15 @@ def main():
     jsonsave(basebudget)
 
 
+# Preparing for switch to object-oriented budget tracker.
+class Budget:
+    def __init__(self):
+        pass
+
+class BudgetCategory:
+    def __init__(self):
+        pass
+
 # This function needs to be more general for initializing a file.
 # The automatic nature of this, particularly the potential for erasing a file in the except clause, is concerning.
 # While it probably will work fairly often, any IOError could trigger a file reset, frustrating users.
