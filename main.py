@@ -23,12 +23,17 @@ def main():
 
 # Preparing for switch to object-oriented budget tracker.
 class Budget:
-    def __init__(self):
-        pass
+    def __init__(self, money):
+        self.money = money
+        self.categories = []
+
 
 class BudgetCategory:
-    def __init__(self):
-        pass
+    def __init__(self, money, name, budget):
+        self.money = money
+        self.name = name
+        budget.categories.append(self.name)
+
 
 # This function needs to be more general for initializing a file.
 # The automatic nature of this, particularly the potential for erasing a file in the except clause, is concerning.
