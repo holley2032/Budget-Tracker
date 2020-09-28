@@ -1,17 +1,5 @@
 # Budget Tool
 
-# Big picture:
-# Webpage with login authentication. Users will go to the webpage to interact with the budget app.
-# HTML forms will be the basis for interacting with the budget. Answers in those forms will create, alter, and delete
-# Python classes on the back end, or interact directly with a PostgreSQL database.
-
-# Stack:
-# Azure for cloud hosting for a Linux OS.
-# Apache HTTP Server.
-# PostgreSQL as the database.
-# Django as the web framework.
-# Python on the backend with an object-oriented approach.
-
 # To-do:
 # Add ability to edit categories post-initializing.
 # Add ability for budget to "rollover" to the next month.
@@ -25,6 +13,7 @@
 
 import json
 import datetime
+import pickle
 
 
 def main():
