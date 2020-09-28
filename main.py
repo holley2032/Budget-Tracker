@@ -42,7 +42,7 @@ def create_budget():
             break
         value = int(input("Please insert the amount alloted to this budget item: "))
         print("Is the following correct?")
-        print(f"{key}: {value}")
+        print(f"{key}, {value}")
         confirm = input("Please confirm if this is accurate (Y/N): ")  # Make more user-friendly?
         if confirm.lower() == "y":
             budget.append({key: value})
