@@ -1,4 +1,17 @@
 # Budget Tool
+
+# Big picture:
+# Webpage with login authentication. Users will go to the webpage to interact with the budget app.
+# HTML forms will be the basis for interacting with the budget. Answers in those forms will create, alter, and delete
+# Python classes on the back end, or interact directly with a PostgreSQL database.
+
+# Stack:
+# Azure for cloud hosting for a Linux OS.
+# Apache HTTP Server.
+# PostgreSQL as the database.
+# Django as the web framework.
+# Python on the backend with an object-oriented approach.
+
 # To-do:
 # Add ability to edit categories post-initializing.
 # Add ability for budget to "rollover" to the next month.
@@ -15,16 +28,12 @@ import datetime
 
 
 def main():
-    new_month()
-    basebudget = jsonload()
-    basebudget = inp(basebudget)
-    jsonsave(basebudget)
+    pass
 
 
-# Preparing for switch to object-oriented budget tracker.
 class Budget:
     def __init__(self, money):
-        self.money = money
+        self.money = money  # Make auto-updating?
         self.categories = []
 
 
@@ -35,69 +44,9 @@ class BudgetCategory:
         budget.categories.append(self.name)
 
 
-# This function needs to be more general for initializing a file.
-# The automatic nature of this, particularly the potential for erasing a file in the except clause, is concerning.
-# While it probably will work fairly often, any IOError could trigger a file reset, frustrating users.
-def new_month():  # Should create a new json file when the month has changed.
-    try:  # Rollover option? Add in last month's budget to this month's?
-        with open(f"{str(datetime.datetime.today())[0:7]}.json", "r"):
-            pass
-    except IOError:
-        with open(f"{str(datetime.datetime.today())[0:7]}.json", "w"):
-            basebudget = create_budget()
-            jsonsave(basebudget)
-
-
-def jsonload():
-    try:
-        with open(f"{str(datetime.datetime.today())[0:7]}.json", "r") as file:
-            basebudget = json.load(file)
-            return basebudget
-    except IOError as e:
-        print(e)
-
-
-def jsonsave(basebudget):
-    try:
-        with open(f"{str(datetime.datetime.today())[0:7]}.json", "w") as file:
-            json.dump(basebudget, file)
-    except IOError as e:
-        print(e)
-
-
-def inp(basebudget):
-    while True:  # Add a time-out? Like, after 1 minute of inactivity maybe?
-        try:
-            for x, di in enumerate(basebudget):  # Display decimals to 2 digits.
-                print(f"{x + 1}: {di}")  # Needs to have a better format.
-            selection = input("Please select which category you would like to view. Type exit to end the program: ")
-            if selection.lower() == "exit":
-                print("Have a good day!")
-                break
-            selection = int(selection) - 1
-            if selection not in range(0, len(basebudget)):
-                print('Please select a valid number.')
-                continue
-            print(basebudget[selection])
-            try:
-                receipt = float(input("How much money does the receipt indicate? "))
-                basebudget[selection][next(iter(basebudget[selection].keys()))] -= receipt
-                print(f"You have subtracted {receipt}"  # Make this message better.
-                      f" from {basebudget[selection]}. The total balance for this category is now "
-                      f"{basebudget[selection][next(iter(basebudget[selection].keys()))]}")
-                continue
-            except ValueError:
-                print(ValueError("Please select a number."))
-                continue
-
-        except ValueError:
-            print(ValueError("Please select a number."))
-            continue
-    return basebudget
-
-
 def create_budget():
-    budget = []
+    total_budget = input("Please enter your total budget:")  # Integrate with an HTML page.
+    budget = Budget(total_budget)
     while True:
         key = input("Please name your category. Type exit to finish your budget: ")
         if key.lower() == "exit":
@@ -135,6 +84,37 @@ def create_budget():
                     print("Sorry, please type Y for yes, or N for no.")
                     continue
     return budget
+
+
+def inp(basebudget):
+    while True:  # Add a time-out? Like, after 1 minute of inactivity maybe?
+        try:
+            for x, di in enumerate(basebudget):  # Display decimals to 2 digits.
+                print(f"{x + 1}: {di}")  # Needs to have a better format.
+            selection = input("Please select which category you would like to view. Type exit to end the program: ")
+            if selection.lower() == "exit":
+                print("Have a good day!")
+                break
+            selection = int(selection) - 1
+            if selection not in range(0, len(basebudget)):
+                print('Please select a valid number.')
+                continue
+            print(basebudget[selection])
+            try:
+                receipt = float(input("How much money does the receipt indicate? "))
+                basebudget[selection][next(iter(basebudget[selection].keys()))] -= receipt
+                print(f"You have subtracted {receipt}"  # Make this message better.
+                      f" from {basebudget[selection]}. The total balance for this category is now "
+                      f"{basebudget[selection][next(iter(basebudget[selection].keys()))]}")
+                continue
+            except ValueError:
+                print(ValueError("Please select a number."))
+                continue
+
+        except ValueError:
+            print(ValueError("Please select a number."))
+            continue
+    return basebudget
 
 
 main()
