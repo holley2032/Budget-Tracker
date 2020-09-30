@@ -11,41 +11,75 @@
 # Create user-friendly experience, i.e. have a webapp or something that isn't the command prompt!
 # Clean code, make names of functions and variables clearer and cleaner.
 
-import json
 import datetime
 import pickle
 
 
 def main():
-    pass
+    if check_budget():
+        with open(f"Budget-{datetime.date.today().month}-{datetime.date.today().year}", "rb") as file:
+            budget = pickle.load(file)
+    else:
+        budget = create_budget()
 
 
 class Budget:
-    def __init__(self, money):
-        self.money = money  # Make auto-updating?
+    def __init__(self):
         self.categories = []
+        self.name = f"{datetime.date.today().month}-{datetime.date.today().year}"
+
+        @property
+        def money_left(self):
+            return self._money_left
+
+        @money_left.setter
+        def money_left(self):  # Computationally inefficient, probably not relevant for a local machine.
+            self._money_left = 0
+            for cat in self.categories:
+                self._money_left += cat.money_left
+
+        @property
+        def money_total(self):
+            return self._money_total
+
+        @money_total.setter
+        def money_total(self):  # Computationally inefficient, but that is probably not relevant for a local machine.
+            self._money_total = 0
+            for cat in self.categories:
+                self._money_total += cat.money_total
 
 
 class BudgetCategory:
     def __init__(self, money, name, budget):
-        self.money = money
+        self.money_left = money
         self.name = name
         budget.categories.append(self.name)
+        self.money_total = 0
+
+
+def check_budget():
+    try:
+        with open(f"Budget-{datetime.date.today().month}-{datetime.date.today().year}", "rb") as file:
+            pass
+        return True
+    except IOError:
+        return False
 
 
 def create_budget():
-    total_budget = input("Please enter your total budget:")  # Integrate with an HTML page.
-    budget = Budget(total_budget)
+    # total_budget = input("Please enter your total budget:")  # Not certain if I want to keep these two lines.
+    # budget = Budget(total_budget)
+    budget = Budget()
     while True:
-        key = input("Please name your category. Type exit to finish your budget: ")
-        if key.lower() == "exit":
+        cat = input("Please name your category. Type exit to finish your budget: ")
+        if cat.lower() == "exit":
             break
-        value = int(input("Please insert the amount alloted to this budget item: "))
+        value = int(input("Please insert the amount allotted to this budget item: "))
         print("Is the following correct?")
-        print(f"{key}, {value}")
+        print(f"{cat}, {value}")
         confirm = input("Please confirm if this is accurate (Y/N): ")  # Make more user-friendly?
         if confirm.lower() == "y":
-            budget.append({key: value})
+            BudgetCategory(value, cat, budget)
             print("Your category has been added.")
             continue
         if confirm.lower() == "n":
@@ -60,10 +94,10 @@ def create_budget():
                     # as if the the user typed "N".
                     break
                 print("Is the following correct?")
-                print(f"{key}: {value}")
+                print(f"{cat}, {value}")
                 confirm = input("Please confirm if this is accurate (Y/N): ")  # Make more user-friendly?
                 if confirm.lower() == "y":
-                    budget.append({key: value})
+                    BudgetCategory(value, cat, budget)
                     print("Your category has been added.")
                     break
                 if confirm.lower() == "n":
