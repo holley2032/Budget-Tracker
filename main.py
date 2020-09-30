@@ -16,11 +16,17 @@ import pickle
 
 
 def main():
+    month = datetime.date.today().month
+    year = datetime.date.today().year
     if check_budget():
-        with open(f"Budget-{datetime.date.today().month}-{datetime.date.today().year}", "rb") as file:
+        with open(f"Budget-{month}-{year}", "rb") as file:
             budget = pickle.load(file)
     else:
-        budget = create_budget()
+        budget = create_budget(Budget())
+    budget = inp(budget)
+    with open(f"Budget-{month}-{year}", "wb") as file:
+        pickle.dump(budget, file)
+    print("Your budget has been saved. Have a lovely day!")
 
 
 class Budget:
@@ -53,7 +59,7 @@ class BudgetCategory:
     def __init__(self, money, name, budget):
         self.money_left = money
         self.name = name
-        budget.categories.append(self.name)
+        budget.categories.append(self)
         self.money_total = 0
 
 
@@ -66,12 +72,11 @@ def check_budget():
         return False
 
 
-def create_budget():
+def create_budget(budget):
     # total_budget = input("Please enter your total budget:")  # Not certain if I want to keep these two lines.
     # budget = Budget(total_budget)
-    budget = Budget()
     while True:
-        cat = input("Please name your category. Type exit to finish your budget: ")
+        cat = input("Please name your category. Type exit to finish editing your budget: ")
         if cat.lower() == "exit":
             break
         value = int(input("Please insert the amount allotted to this budget item: "))
@@ -109,26 +114,32 @@ def create_budget():
     return budget
 
 
-def inp(basebudget):
+def inp(budget):
     while True:  # Add a time-out? Like, after 1 minute of inactivity maybe?
         try:
-            for x, di in enumerate(basebudget):  # Display decimals to 2 digits.
-                print(f"{x + 1}: {di}")  # Needs to have a better format.
-            selection = input("Please select which category you would like to view. Type exit to end the program: ")
+            for x, cat in enumerate(budget.categories):  # Display decimals to 2 digits.
+                print(f"{x + 1}: {cat.name}")  # Needs to have a better format.
+            selection = input("Please select which category you would like to view.\n"
+                              "Type 'add' to add more categories to your budget\n"
+                              "Type 'exit' to end the program: ")
+            if selection.lower() == "add":
+                create_budget(budget)
             if selection.lower() == "exit":
                 print("Have a good day!")
                 break
             selection = int(selection) - 1
-            if selection not in range(0, len(basebudget)):
+            if selection not in range(0, len(budget.categories)):
                 print('Please select a valid number.')
                 continue
-            print(basebudget[selection])
+            category = budget.categories[selection]
+            print(f"{category.name}: {round(category.money_left, 2)}")
             try:
-                receipt = float(input("How much money does the receipt indicate? "))
-                basebudget[selection][next(iter(basebudget[selection].keys()))] -= receipt
-                print(f"You have subtracted {receipt}"  # Make this message better.
-                      f" from {basebudget[selection]}. The total balance for this category is now "
-                      f"{basebudget[selection][next(iter(basebudget[selection].keys()))]}")
+                receipt = round(float(input("How much money does the receipt indicate? ")), 2)
+                category.money_left -= receipt
+                category.money_total += receipt
+                print(f"{receipt} has been deducted from {category.name}.\n"  # Make this message better.
+                      f" The remaining balance for this category is now {round(category.money_left, 2)}.\n"
+                      f" You have spent {round(category.money_total, 2)} on this category this month.")
                 continue
             except ValueError:
                 print(ValueError("Please select a number."))
@@ -137,7 +148,7 @@ def inp(basebudget):
         except ValueError:
             print(ValueError("Please select a number."))
             continue
-    return basebudget
+    return budget
 
 
 main()
