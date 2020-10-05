@@ -23,6 +23,8 @@ def main():
             budget = pickle.load(file)
     else:
         budget = create_budget(Budget())
+        with open(f"Budget-{month}-{year}", "wb") as file:
+            pickle.dump(budget, file)
     budget = inp(budget)
     with open(f"Budget-{month}-{year}", "wb") as file:
         pickle.dump(budget, file)
@@ -121,13 +123,17 @@ def inp(budget):
                 print(f"{x + 1}: {cat.name}")  # Needs to have a better format.
             selection = input("Please select which category you would like to view.\n"
                               "Type 'add' to add more categories to your budget\n"
+                              "Type 'eval' to evaluate your spending so far this month\n"
                               "Type 'exit' to end the program: ")
             if selection.lower() == "add":
                 create_budget(budget)
+            if selection.lower() == "eval":
+                for cat in budget.categories:
+                    print(f"{cat.name}: {cat.money_total}")  # Format in a clearer, cleaner way.
             if selection.lower() == "exit":
                 print("Have a good day!")
                 break
-            selection = int(selection) - 1
+            selection = int(selection) - 1  # Add ability to select category with the category name.
             if selection not in range(0, len(budget.categories)):
                 print('Please select a valid number.')
                 continue
