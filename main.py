@@ -16,15 +16,33 @@ import pickle
 
 
 def main():
-    month = datetime.date.today().month
-    year = datetime.date.today().year
-    if check_budget():
+    budget_choice = check_budget()
+    month = budget_choice[0]
+    year = budget_choice[1]
+    try:
         with open(f"Budget-{month}-{year}", "rb") as file:
             budget = pickle.load(file)
-    else:
-        budget = create_budget(Budget())
-        with open(f"Budget-{month}-{year}", "wb") as file:
-            pickle.dump(budget, file)
+    except FileNotFoundError:
+        try:
+            new_month = int(month)
+            new_year = int(year)
+            if new_month == 1:
+                new_month = "12"
+                new_year = new_year - 1
+                new_year = str(new_year)
+            else:
+                new_month = new_month - 1
+                new_month = str(new_month)
+                new_year = str(new_year)
+            with open(f"Budget-{new_month}-{new_year}", "rb") as file:
+                budget = pickle.load(file)
+                for category in budget.categories:
+                    category.money_total = 0
+                    category.money_left = category.money_start
+        except FileNotFoundError:
+            budget = create_budget(Budget())
+            with open(f"Budget-{month}-{year}", "wb") as file:
+                pickle.dump(budget, file)
     budget = inp(budget)
     with open(f"Budget-{month}-{year}", "wb") as file:
         pickle.dump(budget, file)
@@ -60,6 +78,7 @@ class Budget:
 class BudgetCategory:
     def __init__(self, money, name, budget):
         self.money_left = money
+        self.money_start = money
         self.name = name
         budget.categories.append(self)
         self.money_total = 0
@@ -67,11 +86,13 @@ class BudgetCategory:
 
 def check_budget():
     try:
-        with open(f"Budget-{datetime.date.today().month}-{datetime.date.today().year}", "rb") as file:
+        year = input("What year would you like to choose for your budget? ")
+        month = input("What month? ")
+        with open(f"Budget-{month}-{year}", "rb") as file:
             pass
-        return True
+        return (month, year)
     except IOError:
-        return False
+        return (month, year)
 
 
 def create_budget(budget):
@@ -119,6 +140,7 @@ def create_budget(budget):
 def inp(budget):
     while True:  # Add a time-out? Like, after 1 minute of inactivity maybe?
         try:
+            print(budget.name)
             for x, cat in enumerate(budget.categories):  # Display decimals to 2 digits.
                 print(f"{x + 1}: {cat.name}")  # Needs to have a better format.
             selection = input("Please select which category you would like to view.\n"
@@ -128,8 +150,11 @@ def inp(budget):
             if selection.lower() == "add":
                 create_budget(budget)
             if selection.lower() == "eval":
+                total = 0
                 for cat in budget.categories:
                     print(f"{cat.name}: {cat.money_total}")  # Format in a clearer, cleaner way.
+                    total += cat.money_total
+                print(f"total: {total}")
             if selection.lower() == "exit":
                 print("Have a good day!")
                 break
