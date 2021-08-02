@@ -23,26 +23,34 @@ def main():
         with open(f"Budget-{month}-{year}", "rb") as file:
             budget = pickle.load(file)
     except FileNotFoundError:
-        try:
-            new_month = int(month)
-            new_year = int(year)
-            if new_month == 1:
-                new_month = "12"
-                new_year = new_year - 1
-                new_year = str(new_year)
-            else:
-                new_month = new_month - 1
-                new_month = str(new_month)
-                new_year = str(new_year)
-            with open(f"Budget-{new_month}-{new_year}", "rb") as file:
-                budget = pickle.load(file)
-                for category in budget.categories:
-                    category.money_total = 0
-                    category.money_left = category.money_start
-        except FileNotFoundError:
-            budget = create_budget(Budget())
-            with open(f"Budget-{month}-{year}", "wb") as file:
-                pickle.dump(budget, file)
+        with open(f"Budget-{11}-{2020}", "rb") as file:
+            budget = pickle.load(file)
+            for category in budget.categories:
+                category.money_total = 0
+                category.money_left = category.money_start
+            budget.budget_log = []
+        with open(f"Budget-{month}-{year}", "wb") as file:
+            pickle.dump(budget, file)
+        # try:
+        #     new_month = int(month)
+        #     new_year = int(year)
+        #     if new_month == 1:
+        #         new_month = "12"
+        #         new_year = new_year - 1
+        #         new_year = str(new_year)
+        #     else:
+        #         new_month = new_month - 1
+        #         new_month = str(new_month)
+        #         new_year = str(new_year)
+        #     with open(f"Budget-{new_month}-{new_year}", "rb") as file:
+        #         budget = pickle.load(file)
+        #         for category in budget.categories:
+        #             category.money_total = 0
+        #             category.money_left = category.money_start
+        # except FileNotFoundError:
+        #     budget = create_budget(Budget())
+        #     with open(f"Budget-{month}-{year}", "wb") as file:
+        #         pickle.dump(budget, file)
     budget = inp(budget)
     with open(f"Budget-{month}-{year}", "wb") as file:
         pickle.dump(budget, file)
@@ -53,6 +61,7 @@ class Budget:
     def __init__(self):
         self.categories = []
         self.name = f"{datetime.date.today().month}-{datetime.date.today().year}"
+        self.budget_log = []
 
         @property
         def money_left(self):
@@ -146,6 +155,7 @@ def inp(budget):
             selection = input("Please select which category you would like to view.\n"
                               "Type 'add' to add more categories to your budget\n"
                               "Type 'eval' to evaluate your spending so far this month\n"
+                              "Type 'log' to view the log for this month\n"
                               "Type 'exit' to end the program: ")
             if selection.lower() == "add":
                 create_budget(budget)
@@ -155,6 +165,9 @@ def inp(budget):
                     print(f"{cat.name}: {cat.money_total}")  # Format in a clearer, cleaner way.
                     total += cat.money_total
                 print(f"total: {total}")
+            if selection.lower() == "log":
+                for log in budget.budget_log:
+                    print(log)
             if selection.lower() == "exit":
                 print("Have a good day!")
                 break
@@ -168,6 +181,11 @@ def inp(budget):
                 receipt = round(float(input("How much money does the receipt indicate? ")), 2)
                 category.money_left -= receipt
                 category.money_total += receipt
+                try:
+                    budget.budget_log.append(category.name + ": " + str(receipt))
+                except AttributeError:
+                    budget.budget_log = []
+                    budget.budget_log.append(category.name + ": " + str(receipt))
                 print(f"{receipt} has been deducted from {category.name}.\n"  # Make this message better.
                       f" The remaining balance for this category is now {round(category.money_left, 2)}.\n"
                       f" You have spent {round(category.money_total, 2)} on this category this month.")
