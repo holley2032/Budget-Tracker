@@ -38,7 +38,7 @@ const LandingPage = () => {
         <Login />
       </Dialog>
       <Dialog open={openSignUp}>
-        <SignUp />
+        <SignUp openSignUp={openSignUp} handleOpenSignUp={handleOpenSignUp} />
       </Dialog>
     </Box>
   );
