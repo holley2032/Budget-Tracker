@@ -1,5 +1,25 @@
-class Budget:
-    def __init__(self, username):
+from app import db
+from . import User
+
+class Budget(db.Document):
+    categories = db.ListField()
+    name = db.StringField()
+    budget_log = db.ListField()
+    money_remaining = db.DecimalField()
+    money_spent = db.DecimalField()
+    money_initial = db.DecimalField()
+    user = db.ReferenceField(User)
+    def to_json(self):
+        return {"email": self.User.email,
+        "name": self.name}
+
+
+
+ """   
+ 
+ Old definition of budget for reference:
+ 
+ def __init__(self, username):
         self.categories = []
         self.name = username
         self.budget_log = []
@@ -25,4 +45,4 @@ class Budget:
                 self._money_total += cat.money_total
 
     def addCategory(name, amountMoney):
-        pass
+        pass """
