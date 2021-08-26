@@ -6,6 +6,6 @@ class User(db.Document):
     last_name = db.StringField()
     email = db.StringField()
     password = db.StringField()
-    Budget = db.ReferenceField(Budget)
+    Budget = db.ListField()
     def to_json(self):
         return {"email": self.email}
