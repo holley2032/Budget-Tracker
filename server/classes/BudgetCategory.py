@@ -1,7 +1,11 @@
-class BudgetCategory:
-    def __init__(self, money, name, budget):
-        self.money_left = money
-        self.money_start = money
-        self.name = name
-        budget.categories.append(self)
-        self.money_total = 0
+from app import db
+from . import Budget, User
+
+class BudgetCategory(db.Document):
+    name = db.StringField()
+    cateogry_log = db.ListField()
+    money_remaining = db.DecimalField()
+    money_spent = db.DecimalField()
+    money_initial = db.DecimalField()
+    user = db.ReferenceField(User)
+    budget = db.ReferenceField(Budget)
