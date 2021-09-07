@@ -15,7 +15,7 @@ class Budget(db.Document):
 
 
 
- """   
+    """   
  Old definition of budget for reference:
  
  def __init__(self, username):

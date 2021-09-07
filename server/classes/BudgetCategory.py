@@ -9,3 +9,6 @@ class BudgetCategory(db.Document):
     money_initial = db.DecimalField()
     user = db.ReferenceField(User)
     budget = db.ReferenceField(Budget)
+    def to_json(self):
+        return {"name": self.name,
+        "budget": self.budget}

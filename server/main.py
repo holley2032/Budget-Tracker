@@ -57,42 +57,6 @@ def main():
     print("Your budget has been saved. Have a lovely day!")
 
 
-class Budget:
-    def __init__(self):
-        self.categories = []
-        self.name = f"{datetime.date.today().month}-{datetime.date.today().year}"
-        self.budget_log = []
-
-        @property
-        def money_left(self):
-            return self._money_left
-
-        @money_left.setter
-        def money_left(self):  # Computationally inefficient, probably not relevant for a local machine.
-            self._money_left = 0
-            for cat in self.categories:
-                self._money_left += cat.money_left
-
-        @property
-        def money_total(self):
-            return self._money_total
-
-        @money_total.setter
-        def money_total(self):  # Computationally inefficient, but that is probably not relevant for a local machine.
-            self._money_total = 0
-            for cat in self.categories:
-                self._money_total += cat.money_total
-
-
-class BudgetCategory:
-    def __init__(self, money, name, budget):
-        self.money_left = money
-        self.money_start = money
-        self.name = name
-        budget.categories.append(self)
-        self.money_total = 0
-
-
 def check_budget():
     try:
         year = input("What year would you like to choose for your budget? ")
