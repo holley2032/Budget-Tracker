@@ -12,9 +12,8 @@ app.config['MONGODB_SETTINGS'] = {
 db = MongoEngine()
 db.init_app(app)
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+
+
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from app import db
+from ..app import db, app
 from . import Budget, User
 
 class BudgetCategory(db.Document):

@@ -1,5 +1,7 @@
-from app import db
+from ..app import db, app
 from . import User
+import json
+from flask import request, jsonify
 
 class Budget(db.Document):
     categories = db.ListField()
@@ -12,6 +14,13 @@ class Budget(db.Document):
     def to_json(self):
         return {"email": self.User.email,
         "name": self.name}
+
+@app.route('/budget', methods=['POST'])
+def create_budget():
+    record = json.loads(request.data)
+    budget = Budget(name=record['name'],
+    user=record['user'])
+    budget.save()
 
 
 
