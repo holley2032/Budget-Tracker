@@ -15,6 +15,7 @@ class Budget(db.Document):
         return {"email": self.User.email,
         "name": self.name}
 
+#Need input validation for below route
 @app.route('/budget', methods=['POST'])
 def create_budget():
     record = json.loads(request.data)
