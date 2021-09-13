@@ -1,5 +1,7 @@
 from flask import Flask
-from flask_mongoengine import MongoEngine
+from .classes.Budget import budget
+from .classes.User import user
+from .database import db
 
 app = Flask(__name__)
 
@@ -9,10 +11,10 @@ app.config['MONGODB_SETTINGS'] = {
     'port': 27017
 }
 
-db = MongoEngine()
+app.register_blueprint(budget)
+app.register_blueprint(user)
+
 db.init_app(app)
-
-
 
 
 

@@ -1,8 +1,8 @@
-from ..app import db, app
-from . import User
+from ..database import db
+from flask import Blueprint, request, jsonify
 import json
-from flask import request, jsonify
 
+#If possible, make user a reference field to User.
 class Budget(db.Document):
     categories = db.ListField()
     name = db.StringField()
@@ -10,20 +10,20 @@ class Budget(db.Document):
     money_remaining = db.DecimalField()
     money_spent = db.DecimalField()
     money_initial = db.DecimalField()
-    user = db.ReferenceField(User)
+    user = db.StringField()
     def to_json(self):
         return {"email": self.User.email,
         "name": self.name}
 
+budget = Blueprint('budget', __name__)
+
 #Need input validation for below route
-@app.route('/budget', methods=['POST'])
+@budget.route('/budget', methods=['POST'])
 def create_budget():
     record = json.loads(request.data)
     budget = Budget(name=record['name'],
     user=record['user'])
     budget.save()
-
-
 
     """   
  Old definition of budget for reference:
