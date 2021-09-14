@@ -7,15 +7,29 @@ import {
   InputLabel,
   Input,
 } from "@material-ui/core";
+import { useForm, Controller } from "react-hook-form";
 
 const Budget = (profile) => {
+  const { control, handleSubmit } = useForm();
+  const onSubmit = (data) => console.log(data);
+  //(action = "http://localhost:5000/budget");
+  //method = "post";
+
   return (
     <Box>
-      <form action="http://localhost:5000/budget" method="post">
-        <FormControl>
-          <InputLabel htmlFor="budget name">Budget Name</InputLabel>
-          <Input id="budget name"></Input>
-        </FormControl>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="name"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <FormControl>
+              <InputLabel htmlFor="name">Budget Name</InputLabel>
+              <Input {...field} />
+            </FormControl>
+          )}
+        />
+
         <Button size="large" variant="contained" color="primary" type="submit">
           Submit
         </Button>
