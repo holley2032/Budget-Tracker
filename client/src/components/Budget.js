@@ -11,9 +11,21 @@ import { useForm, Controller } from "react-hook-form";
 
 const Budget = (profile) => {
   const { control, handleSubmit } = useForm();
-  const onSubmit = (data) => console.log(data);
-  //(action = "http://localhost:5000/budget");
-  //method = "post";
+
+  //Replace console logging with user messages.
+  const onSubmit = (data) =>
+    fetch("http://localhost:5000/budget", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
   return (
     <Box>
