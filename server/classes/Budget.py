@@ -24,6 +24,9 @@ def create_budget():
     budget = Budget(name=record['name'],
     user=record['user'])
     budget.save()
+    response = 'success'
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000/')
+    return response
 
     """   
  Old definition of budget for reference:
