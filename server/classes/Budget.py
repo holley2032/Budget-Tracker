@@ -24,8 +24,8 @@ def create_budget():
     budget = Budget(name=record['name'],
     user=record['user'])
     budget.save()
-    response = 'success'
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000/')
+    response = jsonify({'success':'success'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
     """   
